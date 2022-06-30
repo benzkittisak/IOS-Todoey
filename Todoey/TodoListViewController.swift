@@ -9,7 +9,7 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
     
-    let itemArray = ["Find Mike" , "Buy Eggos" , "Destroy Demogorgon"]
+    var itemArray = ["Find Mike" , "Buy Eggos" , "Destroy Demogorgon"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,13 +55,27 @@ class TodoListViewController: UITableViewController {
     //MARK: - Add New Items
     @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
         
+//      สร้างตัวแปรมาเก็บค่าที่ป้อนจาก TextField
+        var textField = UITextField()
+        
 //        ทำให้มันเป็น alert เวลากดเพิ่ม list ใหม่น่ะนะ
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         
+//        เพิ่มปุ่มบน alert
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
 //            เมื่อผู้ใช้กดปุ่ม Add Item บน alert จะให้มันทำอะไรต่อ
-                print("Success")
+            self.itemArray.append(textField.text!)
+            self.tableView.reloadData()
+
         }))
+        
+//        เพิ่ม textfield เข้าไปใน alert
+        alert.addTextField { alertTextfield in
+//            เพิ่ม placeholder ใน textfield
+            alertTextfield.placeholder = "Create new item"
+//            ทีนี้ปัญหาคือ ปุ่มกับตัว action add item มันยุคนละที่กัน เราจะทำยังไงให้มันคุยกันได้ งั้นเราก็จะสร้าง ตัวแปรมาเก็บไว้ยังไงล่ะที่ var textField
+            textField = alertTextfield
+        }
         
 //        เอา alert ไปแสดงผล
         present(alert, animated: true , completion: nil)
