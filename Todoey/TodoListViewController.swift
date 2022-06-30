@@ -14,7 +14,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        tableView.delegate = self
+        
     }
     
     
@@ -51,5 +51,21 @@ class TodoListViewController: UITableViewController {
         
         
     }
+    
+    //MARK: - Add New Items
+    @IBAction func addBtnPressed(_ sender: UIBarButtonItem) {
+        
+//        ทำให้มันเป็น alert เวลากดเพิ่ม list ใหม่น่ะนะ
+        let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
+//            เมื่อผู้ใช้กดปุ่ม Add Item บน alert จะให้มันทำอะไรต่อ
+                print("Success")
+        }))
+        
+//        เอา alert ไปแสดงผล
+        present(alert, animated: true , completion: nil)
+    }
 }
+
 

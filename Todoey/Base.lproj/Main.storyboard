@@ -13,7 +13,7 @@
             <objects>
                 <tableViewController id="KaH-h9-cim" customClass="TodoListViewController" customModule="Todoey" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" id="n31-I0-1lJ">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="808"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <prototypes>
@@ -31,18 +31,25 @@
                             <outlet property="delegate" destination="KaH-h9-cim" id="afm-NR-cX9"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Todoey" id="LSn-V8-p86"/>
+                    <navigationItem key="navigationItem" title="Todoey" id="LSn-V8-p86">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="zOJ-dg-eo8">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <action selector="addBtnPressed:" destination="KaH-h9-cim" id="EdJ-Fo-Od9"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="N1u-e5-NUz" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1765.217391304348" y="126.5625"/>
+            <point key="canvasLocation" x="1368" y="127"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="uE1-wS-mUa">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="5A5-iR-Tg7" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="4ik-Ah-qch">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" translucent="NO" id="4ik-Ah-qch">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" systemColor="systemCyanColor"/>
