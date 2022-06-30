@@ -10,10 +10,15 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
+    
 
-
+//    fn นี้จะถูกทันทีที่แอปมันโหลดขึ้นมา ถูกเรียกใช้ก่อนที่พวก lifecycle จะถูกเรียกอีก
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+//        ลองปริ้นดูว่าข้อมูลที่อยู่ใน defaults มันเก็บไว้ที่ไหน
+//        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
+        
         return true
     }
 

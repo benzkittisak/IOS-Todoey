@@ -11,10 +11,15 @@ class TodoListViewController: UITableViewController {
     
     var itemArray = ["Find Mike" , "Buy Eggos" , "Destroy Demogorgon"]
     
+//    เรียกใช้ database มาเก็บข้อมูลแหละนะ มันจะเก็บข้อมูลในรูปแบบของ Dictionary เก็บอะไรที่ไม่ได้สำคัญมากก็ได้อยู่
+    let defaults = UserDefaults.standard
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        
+        if let items = defaults.array(forKey: "TodoListArray") as? [String] {
+            itemArray = items
+        }
     }
     
     
@@ -65,6 +70,10 @@ class TodoListViewController: UITableViewController {
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
 //            เมื่อผู้ใช้กดปุ่ม Add Item บน alert จะให้มันทำอะไรต่อ
             self.itemArray.append(textField.text!)
+            
+//            set ค่าให้กับตัว defaults
+            self.defaults.set(self.itemArray, forKey: "TodoListArray")
+            
             self.tableView.reloadData()
 
         }))
