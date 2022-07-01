@@ -55,6 +55,16 @@ class TodoListViewController: UITableViewController {
         //        * โค้ดข้างบนมันเยอะไปขอย่อสั้นๆแบบนี้ละกัน
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
+//        ถ้าจะลบข้อมูลออกจาก core data เราจะเขียนแบบนิ้
+//        context.delete(itemArray[indexPath.row])
+//        itemArray.remove(at: indexPath.row)
+//        saveItems()
+        
+//        ถ้าจะอัปเดตข้อมูลเราจะทำแบบนิ้
+//        itemArray[indexPath.row].setValue("Yehhh", forKey: "title")
+//        saveItems()
+        
+        
         saveItems()
         
         //        แบบว่าปกติมันถ้าเราไปกดที่ row แล้วมันก็จะทำให้สีช่องมันเป็นสีเทาค้างไปเลย
@@ -98,7 +108,7 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true , completion: nil)
     }
     
-    //MARK: - Save Data To File
+    //MARK: - Create a new data to CoreData
     
     func saveItems() {
         do {
@@ -110,6 +120,8 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
+    
+    //MARK: - Read Data from CoreData
 //        โหลดข้อมูลจาก CoreData
     func loadItems(){
 //        fetch ช้อมูลออกมาในรูปแบบของ Items
