@@ -14,7 +14,6 @@
 		E31D568D286D299F009621FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E31D568B286D299F009621FE /* Main.storyboard */; };
 		E31D568F286D29A0009621FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E31D568E286D29A0009621FE /* Assets.xcassets */; };
 		E31D5692286D29A0009621FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E31D5690286D29A0009621FE /* LaunchScreen.storyboard */; };
-		E398A717286D4DDA00E1684A /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E398A716286D4DDA00E1684A /* Item.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +26,6 @@
 		E31D568E286D29A0009621FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E31D5691286D29A0009621FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E31D5693286D29A0009621FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		E398A716286D4DDA00E1684A /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -44,7 +42,6 @@
 		E31D5679286D299F009621FE = {
 			isa = PBXGroup;
 			children = (
-				E316664E286E9DD8008DA506 /* DataModel.xcdatamodeld */,
 				E31D5684286D299F009621FE /* Todoey */,
 				E31D5683286D299F009621FE /* Products */,
 			);
@@ -92,7 +89,7 @@
 		E398A715286D4DB500E1684A /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				E398A716286D4DDA00E1684A /* Item.swift */,
+				E316664E286E9DD8008DA506 /* DataModel.xcdatamodeld */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -168,7 +165,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E398A717286D4DDA00E1684A /* Item.swift in Sources */,
 				E3166650286E9DD8008DA506 /* DataModel.xcdatamodeld in Sources */,
 				E31D568A286D299F009621FE /* TodoListViewController.swift in Sources */,
 				E31D5686286D299F009621FE /* AppDelegate.swift in Sources */,

@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -36,8 +37,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
     
+    func applicationWillTerminate(_ application: UIApplication) {
+        self.saveContext()
+    }
+    
+    
     // MARK: - Core Data stack
 
+//    NSPersistentContainer ปกติมันจะเป็น SQLite อะนะ ซึ่งปกติภายใน fn นี้เราจะใส่ชื่อของฐานข้อมูลที่จะใช้ลงไป
     lazy var persistentContainer: NSPersistentContainer = {
         /*
          The persistent container for the application. This implementation
@@ -45,7 +52,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
         */
-        let container = NSPersistentContainer(name: "CoreDataTest")
+        let container = NSPersistentContainer(name: "DataModel")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
@@ -68,6 +75,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // MARK: - Core Data Saving support
 
     func saveContext () {
+//        ปกติแล้ว context มันจะพื้นที่ที่ว่าเราจะแก้ไขข้อมูลตรงไหน ลบข้อมูลตรงไหนอะไรทำนองนั้น
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
