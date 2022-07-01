@@ -19,7 +19,7 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        ฟังก์ชันเอาไว้ดู path ว่ามันเก็บข้อมูลไว้ตรงไหนในแอปของเรา
+        //        ฟังก์ชันเอาไว้ดู path ว่ามันเก็บข้อมูลไว้ตรงไหนในแอปของเรา
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         //        * ต่อไปเราจะมาดึงข้อมูลจาก CoreData กัน
@@ -55,14 +55,14 @@ class TodoListViewController: UITableViewController {
         //        * โค้ดข้างบนมันเยอะไปขอย่อสั้นๆแบบนี้ละกัน
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
-//        ถ้าจะลบข้อมูลออกจาก core data เราจะเขียนแบบนิ้
-//        context.delete(itemArray[indexPath.row])
-//        itemArray.remove(at: indexPath.row)
-//        saveItems()
+        //        ถ้าจะลบข้อมูลออกจาก core data เราจะเขียนแบบนิ้
+        //        context.delete(itemArray[indexPath.row])
+        //        itemArray.remove(at: indexPath.row)
+        //        saveItems()
         
-//        ถ้าจะอัปเดตข้อมูลเราจะทำแบบนิ้
-//        itemArray[indexPath.row].setValue("Yehhh", forKey: "title")
-//        saveItems()
+        //        ถ้าจะอัปเดตข้อมูลเราจะทำแบบนิ้
+        //        itemArray[indexPath.row].setValue("Yehhh", forKey: "title")
+        //        saveItems()
         
         
         saveItems()
@@ -112,7 +112,7 @@ class TodoListViewController: UITableViewController {
     
     func saveItems() {
         do {
-//            ก็ save ข้อมูลแหละเนอะไม่มีอะไรมากหรอก
+            //            ก็ save ข้อมูลแหละเนอะไม่มีอะไรมากหรอก
             try context.save()
         } catch let error {
             print("Error save data , \(error.localizedDescription)")
@@ -122,13 +122,14 @@ class TodoListViewController: UITableViewController {
     
     
     //MARK: - Read Data from CoreData
-//        โหลดข้อมูลจาก CoreData
-    func loadItems(){
-//        fetch ช้อมูลออกมาในรูปแบบของ Items
-        let request : NSFetchRequest<Items> = Items.fetchRequest()
-//        จากนั้นก็สั่งให้มันดึงข้อมูลออกมาเลย แต่ต้องอยู่ในรูปแบบของ docatch เหมือนกัน
+    //        โหลดข้อมูลจาก CoreData
+    func loadItems(with request:NSFetchRequest<Items> = Items.fetchRequest()){
+        //        fetch ช้อมูลออกมาในรูปแบบของ Items
+//        let request : NSFetchRequest<Items> = Items.fetchRequest()
+        //        จากนั้นก็สั่งให้มันดึงข้อมูลออกมาเลย แต่ต้องอยู่ในรูปแบบของ docatch เหมือนกัน
         do {
             itemArray = try context.fetch(request)
+            tableView.reloadData()
         } catch let error {
             print("Error fetching data , \(error.localizedDescription)")
         }
@@ -136,3 +137,33 @@ class TodoListViewController: UITableViewController {
 }
 
 
+//MARK: - SearchBarDelegate Section
+extension TodoListViewController : UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+//        เช็คแปปว่า searchBar มีค่ามาไหมถ้าไม่มีก็ให้มัน fetch ข้อมูลทั้งหมดออกมา
+        if searchBar.text! == "" {
+            loadItems()
+            return
+        }
+        
+        let request : NSFetchRequest<Items> = Items.fetchRequest()
+        
+        //          ต่อไปก็สั่งให้ request ใช้งานตัว predicate
+        //        NSPredicate ใช้สำหรับการกำหนดเงื่อนไขเพื่อกรองข้อมูลจาก object ที่ได้จากการ fetch จาก CoreData
+        //        format คือถ้าเอาง่าย ๆ คืออารมณ์แบบคำสั่ง SQL อะแหละ
+        //        arguments ก็คือเราจะเอาอะไรไปใส่ในเงื่อนไขตรง format อิ %@ ก็แบบว่าเอาอิ arguments ตัว
+        request.predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+        
+        
+//        สั่งให้มันเรียงข้อความแหละนะไม่มีไรหรอก เรียกจากน้อยไปมาก
+        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+//        ต้องเป็น array เนอะเพราะตัว request.sortDescriptor มันเป็น array
+        request.sortDescriptors = [sortDescriptor]
+        
+//        แล้วก็สั่งให้มัน fetch ข้อมูลจาก CoreData  เลยคา
+        loadItems(with: request)
+
+        
+    }
+}
