@@ -12,8 +12,6 @@ class TodoListViewController: UITableViewController {
     
     var itemArray = [Items]()
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
     //            แต่ก่อนจะเรียกใช้จาก CoreData อย่าลืมว่าเราต้องมีตัว context ก่อน ดังนั้นเราจะสร้าง context ขึ้นมาก่อน
     //            UIApplication.shared.delegate คือเราใช้ตัว UIApplication นั่นแหละแล้วก้เข้าถึงข้อมูลที่มัน shared กันใน UIApplication แล้วก้เข้าถึงตัว delegate แล้วทำการเปลี่ยน type ของมันเป็น AppDelegate
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
@@ -21,8 +19,11 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //        * ต่อไปเราจะมาดึงข้อมูลจาก FileManagerกัน
-//        loadItems()
+//        ฟังก์ชันเอาไว้ดู path ว่ามันเก็บข้อมูลไว้ตรงไหนในแอปของเรา
+        print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        
+        //        * ต่อไปเราจะมาดึงข้อมูลจาก CoreData กัน
+        loadItems()
         
     }
     
@@ -74,9 +75,6 @@ class TodoListViewController: UITableViewController {
         
         //        เพิ่มปุ่มบน alert
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
-            //            ** แก้ข้างล่างนี้จากที่ใช้ Model Item จาก swift เราก็จะเปลี่ยนเป็น Items จาก CoreData แทน
-            //            let newItem = Item()
-
             //            แล้วก็เรียกใช้ CoreData
             let newItem = Items(context: self.context)
             
@@ -112,17 +110,17 @@ class TodoListViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    //    โหลดข้อมูลจาก Filemanager
-//    func loadItems(){
-//        if let data = try? Data(contentsOf: dataFilePath!) {
-//
-//            do {
-//
-//            } catch let error {
-//                print("Error decode data, \(error)")
-//            }
-//        }
-//    }
+//        โหลดข้อมูลจาก CoreData
+    func loadItems(){
+//        fetch ช้อมูลออกมาในรูปแบบของ Items
+        let request : NSFetchRequest<Items> = Items.fetchRequest()
+//        จากนั้นก็สั่งให้มันดึงข้อมูลออกมาเลย แต่ต้องอยู่ในรูปแบบของ docatch เหมือนกัน
+        do {
+            itemArray = try context.fetch(request)
+        } catch let error {
+            print("Error fetching data , \(error.localizedDescription)")
+        }
+    }
 }
 
 
