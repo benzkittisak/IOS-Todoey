@@ -6,50 +6,23 @@
 //
 
 import UIKit
+import CoreData
 
 class TodoListViewController: UITableViewController {
     
-    //    ทีนี้เราเปลี่ยนมาใช้ class แล้วดังนั้นเราทำตัวแปรตัวนี้ใหม่
-    //    var itemArray = ["Find Mike" , "Buy Eggos" , "Destroy Demogorgon"]
+    var itemArray = [Items]()
     
-    //    ให้มันเป็น array ของ Item
-    var itemArray = [Item]()
-    //    เรียกใช้ database มาเก็บข้อมูลแหละนะ มันจะเก็บข้อมูลในรูปแบบของ Dictionary เก็บอะไรที่ไม่ได้สำคัญมากก็ได้อยู่
-    //    * ไม่ใช้แล้วแหละจะไปใช้ตัว FileManager แทน
-    //    let defaults = UserDefaults.standard
-    
-    //        ทีนี้เราจะมาแก้ปัญหาเรื่องที่ว่าตัว userdefault มันเก็บ type ที่สร้างเองไม่ได้กันโดยใช้การเก็บข้อมูลเข้าไปไว้ในไฟล์แทน
-    
-    //        เริ่มจากเรียกใช้ตัว FileManager
-    //        userDomainMark นี่คือโฟลเดอร์ Home ของ user นั่นแหละ
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
+    //            แต่ก่อนจะเรียกใช้จาก CoreData อย่าลืมว่าเราต้องมีตัว context ก่อน ดังนั้นเราจะสร้าง context ขึ้นมาก่อน
+    //            UIApplication.shared.delegate คือเราใช้ตัว UIApplication นั่นแหละแล้วก้เข้าถึงข้อมูลที่มัน shared กันใน UIApplication แล้วก้เข้าถึงตัว delegate แล้วทำการเปลี่ยน type ของมันเป็น AppDelegate
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        
-//        let newItem = Item()
-//        newItem.title = "Find Mike"
-//        itemArray.append(newItem)
-//
-//        let newItem2 = Item()
-//        newItem2.title = "Buy Eggos"
-//        itemArray.append(newItem2)
-//
-//        let newItem3 = Item()
-//        newItem3.title = "Destroy Demogorgon"
-//        itemArray.append(newItem3)
-        
-        
-        
-        //        if let items = defaults.array(forKey: "TodoListArray") as? [Item] {
-        //            itemArray = items
-        //        }
         
         //        * ต่อไปเราจะมาดึงข้อมูลจาก FileManagerกัน
-        loadItems()
+//        loadItems()
         
     }
     
@@ -66,24 +39,9 @@ class TodoListViewController: UITableViewController {
         //        ทำให้เวลาที่เราเช็คว่าเราทำส่ิงนี้สิ่ิงนั้นไปแล้ว ทำไมมันถึงมาเช็คถูกให้กับตัวหน้าจอที่สองด้วย เพราะมันเอาช่องแรกของตารางบนมาไง
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
         
-        //        ทีนี้เราจะมาแก้ปัญหากัน
-        //        จะใช้วิธีนี้ก็ได้
-        //        let cell = UITableViewCell(style: .default, reuseIdentifier: "TodoItemCell")
-        
-        //        หรือจะกลับไปแก้ตัวแปรให้มันเป็น dictionary หรือทำใหม่เป็น model ไปเลยก็ได้
-        //        *เหมือนเดิมคือด้วยความที่เราเปลี่ยนเป็น class ต้องมาแก้ตรงนี้ด้วย
-        //        cell.textLabel?.text = itemArray[indexPath.row]
-        
         let item = itemArray[indexPath.row]
         
         cell.textLabel?.text = item.title
-        
-        //        if item.done {
-        //            cell.accessoryType = .checkmark
-        //        } else {
-        //            cell.accessoryType = .none
-        //        }
-        //        ข้างบนมันเยอะไปขอตัดย่อให้สั้นลงอีกละกัน
         
         cell.accessoryType = item.done ? .checkmark : .none
         
@@ -92,29 +50,11 @@ class TodoListViewController: UITableViewController {
     
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //        print(itemArray[indexPath.row])
         
-        //        แบบว่าทำให้เวลาเรากดไปที่ row แล้วมันจะมี checkmark ขึ้นมาข้างหลัง
-        //        tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        
-        //        * ทำให้มันกดแล้วเปลี่ยนค่า done ใน class เป็น true เมื่อกด
-        //        if itemArray[indexPath.row].done {
-        //            itemArray[indexPath.row].done = false
-        //        } else {
-        //            itemArray[indexPath.row].done = true
-        //        }
         //        * โค้ดข้างบนมันเยอะไปขอย่อสั้นๆแบบนี้ละกัน
         itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         saveItems()
-        //        tableView.reloadData()
-        
-        //        ทีนี้ปัญหาคือมันไม่สามารถที่จะกดซ้ำแล้วเอา checkmark ออกได้ ดังนั้นเราจะทำให้มันกดแล้วเอา checkmark ออกกัน
-        //        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-        //            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        //        } else {
-        //            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        //        }
         
         //        แบบว่าปกติมันถ้าเราไปกดที่ row แล้วมันก็จะทำให้สีช่องมันเป็นสีเทาค้างไปเลย
         //        แต่ถ้าเราใช้อันนี้มันจะทำให้สีตารางเวลาเรากดมันจะเป็น animation fade สีเทาหายไปปิ๊บๆอะ
@@ -134,11 +74,14 @@ class TodoListViewController: UITableViewController {
         
         //        เพิ่มปุ่มบน alert
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
-            //            เมื่อผู้ใช้กดปุ่ม Add Item บน alert จะให้มันทำอะไรต่อ
-            //            * แก้ตรงนี้ด้วยจากของธรรมดาให้เป็นคลาส
-            //            self.itemArray.append(textField.text!)
-            let newItem = Item()
+            //            ** แก้ข้างล่างนี้จากที่ใช้ Model Item จาก swift เราก็จะเปลี่ยนเป็น Items จาก CoreData แทน
+            //            let newItem = Item()
+
+            //            แล้วก็เรียกใช้ CoreData
+            let newItem = Items(context: self.context)
+            
             newItem.title = textField.text!
+            newItem.done = false
             self.itemArray.append(newItem)
             
             self.saveItems()
@@ -160,34 +103,26 @@ class TodoListViewController: UITableViewController {
     //MARK: - Save Data To File
     
     func saveItems() {
-        //            set ค่าให้กับตัว defaults
-        //            ต้องเปลี่ยนแล้วล่ะ userdefault มันไม่สามารถที่จะเก็บข้อมูลที่เป็น custom type ได้
-        //            self.defaults.set(self.itemArray, forKey: "TodoListArray")
-        let encoder = PropertyListEncoder()
         do {
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+//            ก็ save ข้อมูลแหละเนอะไม่มีอะไรมากหรอก
+            try context.save()
         } catch let error {
-            print("Error encoding item array , \(error.localizedDescription)")
+            print("Error save data , \(error.localizedDescription)")
         }
         self.tableView.reloadData()
     }
     
     //    โหลดข้อมูลจาก Filemanager
-    func loadItems(){
-        if let data = try? Data(contentsOf: dataFilePath!) {
-            //            เรา encode ข้อมูลมาใช่ป่ะ เราก้ต้อง decode ตอนให้มันอ่านข้อมูล
-            let decoder = PropertyListDecoder()
-            
-            do {
-                //        decode(ตัวแรกเป็น type ของข้อมูลที่จะให้มันเป็น , ตัวที่สองคือข้อมูลที่จะ decode เอามาจากไหน)
-                itemArray = try decoder.decode([Item].self, from: data)
-                
-            } catch let error {
-                print("Error decode data, \(error)")
-            }
-        }
-    }
+//    func loadItems(){
+//        if let data = try? Data(contentsOf: dataFilePath!) {
+//
+//            do {
+//
+//            } catch let error {
+//                print("Error decode data, \(error)")
+//            }
+//        }
+//    }
 }
 
 
