@@ -11,6 +11,12 @@ import CoreData
 class TodoListViewController: UITableViewController {
     
     var itemArray = [Items]()
+    var selectedCategory: Categories? {
+//        อารมณ์แบบว่าเมื่อไหร่ที่ selectedCategory มันมีการ set ค่าแล้ว ก็จะเรียกใช้ loadItems()
+        didSet {
+            loadItems()
+        }
+    }
     
     //            แต่ก่อนจะเรียกใช้จาก CoreData อย่าลืมว่าเราต้องมีตัว context ก่อน ดังนั้นเราจะสร้าง context ขึ้นมาก่อน
     //            UIApplication.shared.delegate คือเราใช้ตัว UIApplication นั่นแหละแล้วก้เข้าถึงข้อมูลที่มัน shared กันใน UIApplication แล้วก้เข้าถึงตัว delegate แล้วทำการเปลี่ยน type ของมันเป็น AppDelegate
@@ -23,7 +29,7 @@ class TodoListViewController: UITableViewController {
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
         
         //        * ต่อไปเราจะมาดึงข้อมูลจาก CoreData กัน
-        loadItems()
+//        loadItems()
         
     }
     
@@ -90,6 +96,7 @@ class TodoListViewController: UITableViewController {
             
             newItem.title = textField.text!
             newItem.done = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             
             self.saveItems()
@@ -123,10 +130,27 @@ class TodoListViewController: UITableViewController {
     
     //MARK: - Read Data from CoreData
     //        โหลดข้อมูลจาก CoreData
-    func loadItems(with request:NSFetchRequest<Items> = Items.fetchRequest()){
+    func loadItems(with request:NSFetchRequest<Items> = Items.fetchRequest() , predicate:NSPredicate? = nil){
         //        fetch ช้อมูลออกมาในรูปแบบของ Items
 //        let request : NSFetchRequest<Items> = Items.fetchRequest()
         //        จากนั้นก็สั่งให้มันดึงข้อมูลออกมาเลย แต่ต้องอยู่ในรูปแบบของ docatch เหมือนกัน
+        
+//        คือตอนนี้พอเราทำไปแล้วมันจะเกิด bug ก็คือว่ามันไม่สามารถโหลดข้อมูลตามประเภทได้เนื่องจากเราทำการดึงข้อมูลออกมาโดยที่ยังไม่มีการกรอง
+//        ข้อมูลใดๆ ๆ เลยดังนั้นเราจะมากรองข้อมูลให้มันตรงกับประเภทก่อน
+        
+        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+//         รวม predicate ด้วยกัน
+//        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate , categoryPredicate])
+        if let addionalPredicate = predicate {
+            let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [addionalPredicate , categoryPredicate])
+            
+            request.predicate = compoundPredicate
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
+//        ต่อมาปัญหามันคือ ใน fn ค้นหาอะคือเรามีการ set predicate ไว้แล้วดังนั้นมันจะไปทับกัน แล้วทำให้โค้ดเราเอ๋อ
+//        แล้วเราจะแก้มันได้ยังไงล่ะ เราจะทำการรับ parameter predicate เข้ามาแทน
         do {
             itemArray = try context.fetch(request)
             tableView.reloadData()
@@ -154,7 +178,7 @@ extension TodoListViewController : UISearchBarDelegate {
         //        NSPredicate ใช้สำหรับการกำหนดเงื่อนไขเพื่อกรองข้อมูลจาก object ที่ได้จากการ fetch จาก CoreData
         //        format คือถ้าเอาง่าย ๆ คืออารมณ์แบบคำสั่ง SQL อะแหละ
         //        arguments ก็คือเราจะเอาอะไรไปใส่ในเงื่อนไขตรง format อิ %@ ก็แบบว่าเอาอิ arguments ตัว
-        request.predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
         
         
 //        สั่งให้มันเรียงข้อความแหละนะไม่มีไรหรอก เรียกจากน้อยไปมาก
@@ -163,7 +187,7 @@ extension TodoListViewController : UISearchBarDelegate {
         request.sortDescriptors = [sortDescriptor]
         
 //        แล้วก็สั่งให้มัน fetch ข้อมูลจาก CoreData  เลยคา
-        loadItems(with: request)
+        loadItems(with: request , predicate: predicate)
         
     }
     
