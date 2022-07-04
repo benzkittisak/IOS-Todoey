@@ -142,10 +142,11 @@ extension TodoListViewController : UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
 //        เช็คแปปว่า searchBar มีค่ามาไหมถ้าไม่มีก็ให้มัน fetch ข้อมูลทั้งหมดออกมา
-        if searchBar.text! == "" {
-            loadItems()
-            return
-        }
+//        เลิกใช้ตัวนี้แล้วไปใช้อีกตัวที่ดีกว่า
+//        if searchBar.text! == "" {
+//            loadItems()
+//            return
+//        }
         
         let request : NSFetchRequest<Items> = Items.fetchRequest()
         
@@ -163,7 +164,19 @@ extension TodoListViewController : UISearchBarDelegate {
         
 //        แล้วก็สั่งให้มัน fetch ข้อมูลจาก CoreData  เลยคา
         loadItems(with: request)
-
         
+    }
+    
+//    หันมาใช้ตัวนี้แทนจากบรรทัดที่ 144 - 149
+//    เมื่อข้อความมีการเปลี่ยนแปลงอะไร ฟังก์ชันนี้จะถูกเรียกใช้งานโดยอัตโนมัติ
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+//            ก็คือสั่งให้มันเอา คีย์บอร์ดออกนั่นแหละ
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }

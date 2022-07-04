@@ -14,6 +14,7 @@
 		E31D568D286D299F009621FE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E31D568B286D299F009621FE /* Main.storyboard */; };
 		E31D568F286D29A0009621FE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E31D568E286D29A0009621FE /* Assets.xcassets */; };
 		E31D5692286D29A0009621FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E31D5690286D29A0009621FE /* LaunchScreen.storyboard */; };
+		E3AE2156287285DB0051FFC1 /* CategoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AE2155287285DB0051FFC1 /* CategoryViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,7 @@
 		E31D568E286D29A0009621FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E31D5691286D29A0009621FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E31D5693286D29A0009621FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E3AE2155287285DB0051FFC1 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 			isa = PBXGroup;
 			children = (
 				E31D5689286D299F009621FE /* TodoListViewController.swift */,
+				E3AE2155287285DB0051FFC1 /* CategoryViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3AE2156287285DB0051FFC1 /* CategoryViewController.swift in Sources */,
 				E3166650286E9DD8008DA506 /* DataModel.xcdatamodeld in Sources */,
 				E31D568A286D299F009621FE /* TodoListViewController.swift in Sources */,
 				E31D5686286D299F009621FE /* AppDelegate.swift in Sources */,
