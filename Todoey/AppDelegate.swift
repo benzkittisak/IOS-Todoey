@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -17,8 +18,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-//        ลองปริ้นดูว่าข้อมูลที่อยู่ใน defaults มันเก็บไว้ที่ไหน
-//        print(NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).last! as String)
+        let data = Data()
+        data.name = "Momoo"
+        data.age = 16
+        
+        do {
+            let realm = try Realm()
+//            realm.write = ก็อารมณ์แบบว่าทำการเพิ่ม object ใหม่ไปที่ realm ซึ่งภายใน write จะต้องมีฟังก์ชันที่ชื่อว่า add ด้วยแหละ
+            try realm.write {
+                realm.add(data)
+            }
+        } catch let error {
+            print("Error initialising new realm , \(error)")
+        }
         
         return true
     }
