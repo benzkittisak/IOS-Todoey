@@ -7,7 +7,7 @@
 
 import UIKit
 import RealmSwift
-
+import SwipeCellKit
 
 class CategoryViewController: UITableViewController {
     
@@ -29,11 +29,18 @@ class CategoryViewController: UITableViewController {
         
     }
     
+    //    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    //        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") as! SwipeTableViewCell
+    //        cell.delegate = self
+    //        return cell
+    //    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath) as! SwipeTableViewCell
+        cell.delegate = self
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Category added yet"
+        
         
         return cell
         
@@ -41,6 +48,8 @@ class CategoryViewController: UITableViewController {
     
     
     //MARK: - TableView Delegate Methods
+    
+    
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
@@ -76,7 +85,7 @@ class CategoryViewController: UITableViewController {
         categories = realm.objects(Category.self)
         //      เราไม่สามารถที่จะเอาข้อมูลจาก realm ใส่ไปในตัวแปร categories ที่เราสร้างไว้เป็น global โดยตรงได้เนื่องจาก
         //        type ของข้อมูลที่ได้มาจาก realm มันเป็น Result
-//        วิธีแก้ของเราก็คือ ก็ไปเปลี่ยน type ของมันให้ตรงกันก็จบ
+        //        วิธีแก้ของเราก็คือ ก็ไปเปลี่ยน type ของมันให้ตรงกันก็จบ
         tableView.reloadData()
         
     }
@@ -108,4 +117,26 @@ class CategoryViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
         
     }
+}
+
+//MARK: - Swipe Cell Delegate Methods
+extension CategoryViewController : SwipeTableViewCellDelegate {
+    
+    func tableView(_ tableView: UITableView, editActionsForRowAt indexPath: IndexPath, for orientation: SwipeActionsOrientation) -> [SwipeAction]? {
+        
+//        เช็คว่ามีการปัด cell มาจากทางขวาจริงใช่ไหม
+        guard orientation == .right else { return nil }
+        
+//
+        let deleteAction = SwipeAction(style: .destructive, title: "Delete") { action, indexPath in
+            // handle action by updating model with deletion
+            print("Item deleted")
+        }
+        
+        // customize the action appearance
+        deleteAction.image = UIImage(named: "delete-icon")
+        
+        return [deleteAction]
+    }
+    
 }
