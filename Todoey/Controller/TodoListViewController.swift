@@ -6,37 +6,35 @@
 //
 
 import UIKit
-import CoreData
+import RealmSwift
 
 class TodoListViewController: UITableViewController {
     
-    var itemArray = [Items]()
-    var selectedCategory: Categories? {
-//        อารมณ์แบบว่าเมื่อไหร่ที่ selectedCategory มันมีการ set ค่าแล้ว ก็จะเรียกใช้ loadItems()
+    var todoItems:Results<Items>?
+    
+    let realm = try! Realm()
+    
+    var selectedCategory: Category? {
+        //        อารมณ์แบบว่าเมื่อไหร่ที่ selectedCategory มันมีการ set ค่าแล้ว ก็จะเรียกใช้ loadItems()
         didSet {
             loadItems()
         }
     }
     
-    //            แต่ก่อนจะเรียกใช้จาก CoreData อย่าลืมว่าเราต้องมีตัว context ก่อน ดังนั้นเราจะสร้าง context ขึ้นมาก่อน
-    //            UIApplication.shared.delegate คือเราใช้ตัว UIApplication นั่นแหละแล้วก้เข้าถึงข้อมูลที่มัน shared กันใน UIApplication แล้วก้เข้าถึงตัว delegate แล้วทำการเปลี่ยน type ของมันเป็น AppDelegate
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        navigationItem.title = selectedCategory?.name ?? "Items"
         
         //        ฟังก์ชันเอาไว้ดู path ว่ามันเก็บข้อมูลไว้ตรงไหนในแอปของเรา
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
-        
-        //        * ต่อไปเราจะมาดึงข้อมูลจาก CoreData กัน
-//        loadItems()
-        
+
     }
     
     
     //MARK: - Tableview Datasource Methods
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
+        return todoItems?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -46,11 +44,12 @@ class TodoListViewController: UITableViewController {
         //        ทำให้เวลาที่เราเช็คว่าเราทำส่ิงนี้สิ่ิงนั้นไปแล้ว ทำไมมันถึงมาเช็คถูกให้กับตัวหน้าจอที่สองด้วย เพราะมันเอาช่องแรกของตารางบนมาไง
         let cell = tableView.dequeueReusableCell(withIdentifier: "TodoItemCell", for: indexPath)
         
-        let item = itemArray[indexPath.row]
-        
-        cell.textLabel?.text = item.title
-        
-        cell.accessoryType = item.done ? .checkmark : .none
+        if let item = todoItems?[indexPath.row] {
+            cell.textLabel?.text = item.title
+            cell.accessoryType = item.done ? .checkmark : .none
+        } else {
+            cell.textLabel?.text = "No Items Added"
+        }
         
         return cell
     }
@@ -58,23 +57,18 @@ class TodoListViewController: UITableViewController {
     //MARK: - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        //        * โค้ดข้างบนมันเยอะไปขอย่อสั้นๆแบบนี้ละกัน
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+//         อัปเดตข้อมูลใน realm
+        if let item = todoItems?[indexPath.row] {
+            do {
+                try realm.write({
+                    item.done = !item.done
+                })
+            } catch let error {
+                print("Error updating data \(error)")
+            }
+        }
         
-        //        ถ้าจะลบข้อมูลออกจาก core data เราจะเขียนแบบนิ้
-        //        context.delete(itemArray[indexPath.row])
-        //        itemArray.remove(at: indexPath.row)
-        //        saveItems()
-        
-        //        ถ้าจะอัปเดตข้อมูลเราจะทำแบบนิ้
-        //        itemArray[indexPath.row].setValue("Yehhh", forKey: "title")
-        //        saveItems()
-        
-        
-        saveItems()
-        
-        //        แบบว่าปกติมันถ้าเราไปกดที่ row แล้วมันก็จะทำให้สีช่องมันเป็นสีเทาค้างไปเลย
-        //        แต่ถ้าเราใช้อันนี้มันจะทำให้สีตารางเวลาเรากดมันจะเป็น animation fade สีเทาหายไปปิ๊บๆอะ
+        tableView.reloadData()
         tableView.deselectRow(at: indexPath, animated: true)
         
         
@@ -91,15 +85,23 @@ class TodoListViewController: UITableViewController {
         
         //        เพิ่มปุ่มบน alert
         alert.addAction(UIAlertAction(title: "Add Item", style: .default, handler: { action in
-            //            แล้วก็เรียกใช้ CoreData
-            let newItem = Items(context: self.context)
             
-            newItem.title = textField.text!
-            newItem.done = false
-            newItem.parentCategory = self.selectedCategory
-            self.itemArray.append(newItem)
+            if let currentCategory = self.selectedCategory {
+                do {
+                    try self.realm.write{
+                        let newItem = Items()
+                        newItem.title = textField.text!
+                        
+                        //                ก็คือเอา todo อันนี้ไปเพิ่มให้กับประเภทของมันด้วย
+                        currentCategory.items.append(newItem)
+                        
+                    }
+                } catch let error {
+                    print("Error saving data \(error)")
+                }
+            }
             
-            self.saveItems()
+            self.tableView.reloadData()
             
         }))
         
@@ -117,90 +119,68 @@ class TodoListViewController: UITableViewController {
     
     //MARK: - Create a new data to CoreData
     
-    func saveItems() {
-        do {
-            //            ก็ save ข้อมูลแหละเนอะไม่มีอะไรมากหรอก
-            try context.save()
-        } catch let error {
-            print("Error save data , \(error.localizedDescription)")
-        }
-        self.tableView.reloadData()
-    }
+    //        func save() {
+    //            do {
+    //                //            ก็ save ข้อมูลแหละเนอะไม่มีอะไรมากหรอก
+    //                try realm.write({
+    //                    realm.add(todoItems)
+    //                })
+    //            } catch let error {
+    //                print("Error saving data , \(error.localizedDescription)")
+    //            }
+    //            self.tableView.reloadData()
+    //        }
+    //
     
+    //MARK: - Read Data from Realm
     
-    //MARK: - Read Data from CoreData
-    //        โหลดข้อมูลจาก CoreData
-    func loadItems(with request:NSFetchRequest<Items> = Items.fetchRequest() , predicate:NSPredicate? = nil){
-        //        fetch ช้อมูลออกมาในรูปแบบของ Items
-//        let request : NSFetchRequest<Items> = Items.fetchRequest()
-        //        จากนั้นก็สั่งให้มันดึงข้อมูลออกมาเลย แต่ต้องอยู่ในรูปแบบของ docatch เหมือนกัน
-        
-//        คือตอนนี้พอเราทำไปแล้วมันจะเกิด bug ก็คือว่ามันไม่สามารถโหลดข้อมูลตามประเภทได้เนื่องจากเราทำการดึงข้อมูลออกมาโดยที่ยังไม่มีการกรอง
-//        ข้อมูลใดๆ ๆ เลยดังนั้นเราจะมากรองข้อมูลให้มันตรงกับประเภทก่อน
-        
-        let categoryPredicate = NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
-//         รวม predicate ด้วยกัน
-//        let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [predicate , categoryPredicate])
-        if let addionalPredicate = predicate {
-            let compoundPredicate = NSCompoundPredicate(andPredicateWithSubpredicates: [addionalPredicate , categoryPredicate])
-            
-            request.predicate = compoundPredicate
-        } else {
-            request.predicate = categoryPredicate
-        }
-        
-//        ต่อมาปัญหามันคือ ใน fn ค้นหาอะคือเรามีการ set predicate ไว้แล้วดังนั้นมันจะไปทับกัน แล้วทำให้โค้ดเราเอ๋อ
-//        แล้วเราจะแก้มันได้ยังไงล่ะ เราจะทำการรับ parameter predicate เข้ามาแทน
-        do {
-            itemArray = try context.fetch(request)
-            tableView.reloadData()
-        } catch let error {
-            print("Error fetching data , \(error.localizedDescription)")
-        }
+    func loadItems(){
+        todoItems = selectedCategory?.items.sorted(byKeyPath: "title", ascending: true) ?? nil
+        tableView.reloadData()
     }
 }
 
 
 //MARK: - SearchBarDelegate Section
-extension TodoListViewController : UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-//        เช็คแปปว่า searchBar มีค่ามาไหมถ้าไม่มีก็ให้มัน fetch ข้อมูลทั้งหมดออกมา
-//        เลิกใช้ตัวนี้แล้วไปใช้อีกตัวที่ดีกว่า
-//        if searchBar.text! == "" {
+//extension TodoListViewController : UISearchBarDelegate {
+//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+//
+////        เช็คแปปว่า searchBar มีค่ามาไหมถ้าไม่มีก็ให้มัน fetch ข้อมูลทั้งหมดออกมา
+////        เลิกใช้ตัวนี้แล้วไปใช้อีกตัวที่ดีกว่า
+////        if searchBar.text! == "" {
+////            loadItems()
+////            return
+////        }
+//
+//        let request : NSFetchRequest<Items> = Items.fetchRequest()
+//
+//        //          ต่อไปก็สั่งให้ request ใช้งานตัว predicate
+//        //        NSPredicate ใช้สำหรับการกำหนดเงื่อนไขเพื่อกรองข้อมูลจาก object ที่ได้จากการ fetch จาก CoreData
+//        //        format คือถ้าเอาง่าย ๆ คืออารมณ์แบบคำสั่ง SQL อะแหละ
+//        //        arguments ก็คือเราจะเอาอะไรไปใส่ในเงื่อนไขตรง format อิ %@ ก็แบบว่าเอาอิ arguments ตัว
+//        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
+//
+//
+////        สั่งให้มันเรียงข้อความแหละนะไม่มีไรหรอก เรียกจากน้อยไปมาก
+//        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
+////        ต้องเป็น array เนอะเพราะตัว request.sortDescriptor มันเป็น array
+//        request.sortDescriptors = [sortDescriptor]
+//
+////        แล้วก็สั่งให้มัน fetch ข้อมูลจาก CoreData  เลยคา
+//        loadItems(with: request , predicate: predicate)
+//
+//    }
+//
+////    หันมาใช้ตัวนี้แทนจากบรรทัดที่ 144 - 149
+////    เมื่อข้อความมีการเปลี่ยนแปลงอะไร ฟังก์ชันนี้จะถูกเรียกใช้งานโดยอัตโนมัติ
+//    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+//        if searchBar.text?.count == 0 {
 //            loadItems()
-//            return
+//
+////            ก็คือสั่งให้มันเอา คีย์บอร์ดออกนั่นแหละ
+//            DispatchQueue.main.async {
+//                searchBar.resignFirstResponder()
+//            }
 //        }
-        
-        let request : NSFetchRequest<Items> = Items.fetchRequest()
-        
-        //          ต่อไปก็สั่งให้ request ใช้งานตัว predicate
-        //        NSPredicate ใช้สำหรับการกำหนดเงื่อนไขเพื่อกรองข้อมูลจาก object ที่ได้จากการ fetch จาก CoreData
-        //        format คือถ้าเอาง่าย ๆ คืออารมณ์แบบคำสั่ง SQL อะแหละ
-        //        arguments ก็คือเราจะเอาอะไรไปใส่ในเงื่อนไขตรง format อิ %@ ก็แบบว่าเอาอิ arguments ตัว
-        let predicate = NSPredicate(format: "title CONTAINS %@", searchBar.text!)
-        
-        
-//        สั่งให้มันเรียงข้อความแหละนะไม่มีไรหรอก เรียกจากน้อยไปมาก
-        let sortDescriptor = NSSortDescriptor(key: "title", ascending: true)
-//        ต้องเป็น array เนอะเพราะตัว request.sortDescriptor มันเป็น array
-        request.sortDescriptors = [sortDescriptor]
-        
-//        แล้วก็สั่งให้มัน fetch ข้อมูลจาก CoreData  เลยคา
-        loadItems(with: request , predicate: predicate)
-        
-    }
-    
-//    หันมาใช้ตัวนี้แทนจากบรรทัดที่ 144 - 149
-//    เมื่อข้อความมีการเปลี่ยนแปลงอะไร ฟังก์ชันนี้จะถูกเรียกใช้งานโดยอัตโนมัติ
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        if searchBar.text?.count == 0 {
-            loadItems()
-            
-//            ก็คือสั่งให้มันเอา คีย์บอร์ดออกนั่นแหละ
-            DispatchQueue.main.async {
-                searchBar.resignFirstResponder()
-            }
-        }
-    }
-}
+//    }
+//}

@@ -35,7 +35,7 @@
                     <navigationItem key="navigationItem" title="Todoey" id="ikz-2P-qef">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="2uu-tQ-acu">
                             <connections>
-                                <action selector="addBtnPressed:" destination="Eqb-dS-e0i" id="TKh-ij-4zf"/>
+                                <action selector="addButtonPressed:" destination="Eqb-dS-e0i" id="IuG-UP-7u2"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -80,7 +80,6 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Items" id="LSn-V8-p86">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="zOJ-dg-eo8">
-                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
                                 <action selector="addBtnPressed:" destination="KaH-h9-cim" id="EdJ-Fo-Od9"/>
                             </connections>
@@ -100,9 +99,6 @@
                         <rect key="frame" x="0.0" y="44" width="414" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="tintColor" systemColor="systemCyanColor"/>
-                        <textAttributes key="titleTextAttributes">
-                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>

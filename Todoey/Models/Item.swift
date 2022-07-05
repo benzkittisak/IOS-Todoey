@@ -9,8 +9,8 @@ import Foundation
 import RealmSwift
 
 class Items: Object {
-    @Persisted var title:String = ""
-    @Persisted var done:Bool = false
+    @objc dynamic var title:String = ""
+    @objc dynamic var done:Bool = false
     
 //  fromType คือเอาง่าย ๆ ว่าจะไปเชื่อมกับข้อมูลคลาสไหน แล้วก้ property คือจะเชื่อมกับ property ตัวไหนในคลาสนั้น
     var parentCategory = LinkingObjects(fromType:Category.self , property:"items")
