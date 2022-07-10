@@ -22,6 +22,16 @@ class CategoryViewController: SwipeTableViewController {
         
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        guard let navBar = navigationController?.navigationBar else { fatalError("navbar is doesn't exits") }
+        
+        navBar.backgroundColor = .white
+        navBar.tintColor = .black
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : UIColor.black]
+    }
+    
     //MARK: - TableView Datasource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -42,7 +52,11 @@ class CategoryViewController: SwipeTableViewController {
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added Yet"
         
 //        สุ่มสีจาก chemeleon framework
-        cell.backgroundColor = UIColor(hexString: (categories?[indexPath.row].color) ?? "#74b9ff")
+        if let color = categories?[indexPath.row].color {
+            cell.backgroundColor = UIColor(hexString:color)
+            cell.textLabel?.textColor = ContrastColorOf(UIColor(hexString: color)!, returnFlat: true)
+        }
+       
         return cell
     }
     

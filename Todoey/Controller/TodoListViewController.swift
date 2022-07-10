@@ -15,6 +15,8 @@ class TodoListViewController: UITableViewController {
     
     let realm = try! Realm()
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     var selectedCategory: Category? {
         //        อารมณ์แบบว่าเมื่อไหร่ที่ selectedCategory มันมีการ set ค่าแล้ว ก็จะเรียกใช้ loadItems()
         didSet {
@@ -26,11 +28,40 @@ class TodoListViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = selectedCategory?.name ?? "Items"
-        
+
         //        ฟังก์ชันเอาไว้ดู path ว่ามันเก็บข้อมูลไว้ตรงไหนในแอปของเรา
         print(FileManager.default.urls(for: .documentDirectory, in: .userDomainMask))
+        tableView.rowHeight = 80.0
+        
+//        โค้ดตรงนี้จะพังเพราะว่าตัว navigationController มันยังไม่ถูกสร้างเลย แต่เราเรียกใช้มันแล้ว
+//        guard let color = selectedCategory?.color else { return print("Error : Color is nil") }
+//        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation controller doesn't exist.")}
+//
+//        navBar.barTintColor = UIColor(hexString: color)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+       
+        
+        guard let color = selectedCategory?.color else { return print("Error : Color is nil") }
+        guard let navBar = navigationController?.navigationBar else {fatalError("Navigation controller doesn't exist.")}
+        guard let navBarColor = UIColor(hexString: color) else { fatalError("Color is nil")}
+        
+//        เปลี่ยนสีพื้นหลัง
+        navBar.backgroundColor = navBarColor
+
+//        เปลี่ยนสีพวกปุ่มต่าง ๆ
+        navBar.tintColor = ContrastColorOf(navBarColor, returnFlat: true)
+        
+//        เปลี่ยนสีของ title
+        navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor : ContrastColorOf(navBarColor, returnFlat: true)]
+        
+        searchBar.barTintColor = navBarColor
         
     }
+
     
     
     //MARK: - Tableview Datasource Methods
@@ -48,8 +79,11 @@ class TodoListViewController: UITableViewController {
         if let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title
             
-            if let color = FlatSkyBlue().darken(byPercentage: CGFloat(indexPath.row) / CGFloat(todoItems!.count)) {
+            if let color = UIColor(hexString: selectedCategory!.color)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(todoItems!.count)) {
                 cell.backgroundColor = color
+                
+//                ทำให้สีของข้อความมันเปลี่ยนเป็นสีขาวเมื่อพื้นหลังมันมืด หรือสีดำเมื่อพื้นหลังมันขาว
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
             }
             
             cell.accessoryType = item.done ? .checkmark : .none
