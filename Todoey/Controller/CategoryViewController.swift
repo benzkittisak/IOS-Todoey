@@ -42,7 +42,7 @@ class CategoryViewController: SwipeTableViewController {
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Added Yet"
         
 //        สุ่มสีจาก chemeleon framework
-        cell.backgroundColor = UIColor(hexString: (categories?[indexPath.row].color) ?? "74b9ff")
+        cell.backgroundColor = UIColor(hexString: (categories?[indexPath.row].color) ?? "#74b9ff")
         return cell
     }
     
