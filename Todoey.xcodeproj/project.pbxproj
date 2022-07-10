@@ -16,6 +16,7 @@
 		E31D5692286D29A0009621FE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E31D5690286D29A0009621FE /* LaunchScreen.storyboard */; };
 		E33AF06C287423700040C271 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = E33AF06B287423700040C271 /* Realm */; };
 		E33AF06E287423700040C271 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E33AF06D287423700040C271 /* RealmSwift */; };
+		E33AF070287429AD0040C271 /* SwipeTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33AF06F287429AD0040C271 /* SwipeTableViewController.swift */; };
 		E38D92492872D83600FC2570 /* Realm in Frameworks */ = {isa = PBXBuildFile; productRef = E38D92482872D83600FC2570 /* Realm */; };
 		E38D924B2872D83600FC2570 /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E38D924A2872D83600FC2570 /* RealmSwift */; };
 		E38D924F2872E19300FC2570 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = E38D924E2872E19300FC2570 /* Item.swift */; };
@@ -35,6 +36,7 @@
 		E31D568E286D29A0009621FE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E31D5691286D29A0009621FE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E31D5693286D29A0009621FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E33AF06F287429AD0040C271 /* SwipeTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeTableViewController.swift; sourceTree = "<group>"; };
 		E38D924E2872E19300FC2570 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		E38D92502872E1F100FC2570 /* Categories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Categories.swift; sourceTree = "<group>"; };
 		E3AE2155287285DB0051FFC1 /* CategoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryViewController.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 			isa = PBXGroup;
 			children = (
 				E31D5689286D299F009621FE /* TodoListViewController.swift */,
+				E33AF06F287429AD0040C271 /* SwipeTableViewController.swift */,
 				E3AE2155287285DB0051FFC1 /* CategoryViewController.swift */,
 			);
 			path = Controller;
@@ -260,6 +263,7 @@
 				E3AE2156287285DB0051FFC1 /* CategoryViewController.swift in Sources */,
 				E38D92512872E1F100FC2570 /* Categories.swift in Sources */,
 				E31D568A286D299F009621FE /* TodoListViewController.swift in Sources */,
+				E33AF070287429AD0040C271 /* SwipeTableViewController.swift in Sources */,
 				E38D924F2872E19300FC2570 /* Item.swift in Sources */,
 				E31D5686286D299F009621FE /* AppDelegate.swift in Sources */,
 				E31D5688286D299F009621FE /* SceneDelegate.swift in Sources */,
